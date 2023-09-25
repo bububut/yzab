@@ -1,23 +1,38 @@
+import numpy as np
+
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import ORJSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 
-from yzab.data_manager import data_manager
+from .data_manager import data_manager
 
-app = FastAPI()
+
+app = FastAPI(default_response_class=ORJSONResponse)
 
 server_started = False
 
 @app.get("/api/data/{data_id}")
 async def read_data(data_id: str):
-    df = data_manager.get_data(data_id)
-    if df is None:
+    data = data_manager.get_data(data_id)
+    if data is None:
         raise HTTPException(status_code=404, detail="Data not found")
-    return df.to_dict()
+
+    # whatever filter methods
+    df = data['data'].iloc[:10000]
+
+    res = {
+        'plot_config': data['plot_config'],
+        'data': df[data['required_columns']].to_dict(orient='records'),
+    }
+    return res
+
 
 @app.get("/api/data_catalog")
 async def get_data_catalog():
     return data_manager.get_data_catalog()
+
 
 @app.delete("/api/data/{data_id}")
 async def delete_data(data_id: str):
@@ -29,12 +44,20 @@ app.mount("/", StaticFiles(directory=Path(__file__).parent / "static", html=True
 
 
 def run_server():
+    import uvicorn
+    uvicorn.run("yzab.app:app", host="0.0.0.0", port=8888)
+    print('in run_server() after uvicorn run')
+
+
+def start_server():
     global server_started
     if not server_started:
         server_started = True
-        import uvicorn
-        uvicorn.run("yzab.app:app", host="0.0.0.0", port=8888)
-        # print('in run_server() after uvicorn run')
+        import threading
+        t = threading.Thread(target=run_server)
+        t.start()
+        print('in start_server() after t.start()')
+
 
 # add a function to stop the server
 # don't stop the server via a request

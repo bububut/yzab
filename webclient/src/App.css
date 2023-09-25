@@ -1,4 +1,7 @@
 .App {
+  height: 100vh;
+  padding: 16px;
+  box-sizing: border-box;
   text-align: center;
 }
 
@@ -35,4 +38,12 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.chart-container,
+.list-container {
+  height: 100%;
+  border: 1px solid #ccc;
+  padding: 16px;
+  box-sizing: border-box;
 }
