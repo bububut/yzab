@@ -1,5 +1,7 @@
 import numpy as np
-
+import uvicorn
+import asyncio
+import threading
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import ORJSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -11,7 +13,8 @@ from .data_manager import data_manager
 
 app = FastAPI(default_response_class=ORJSONResponse)
 
-server_started = False
+server = None
+server_thread = None
 
 @app.get("/api/data/{data_id}")
 async def read_data(data_id: str):
@@ -44,27 +47,28 @@ app.mount("/", StaticFiles(directory=Path(__file__).parent / "static", html=True
 
 
 def run_server():
-    import uvicorn
-    uvicorn.run("yzab.app:app", host="0.0.0.0", port=8888)
-    print('in run_server() after uvicorn run')
+    global server
+    config = uvicorn.Config('yzab.app:app', host='0.0.0.0', port=8888)
+    server = uvicorn.Server(config)
 
 
 def start_server():
-    global server_started
-    if not server_started:
-        server_started = True
-        import threading
-        t = threading.Thread(target=run_server)
-        t.start()
-        print('in start_server() after t.start()')
+    global server, server_thread
+    if server is None:
+        print('starting new server...')
+        config = uvicorn.Config('yzab.app:app', host='0.0.0.0', port=8888)
+        server = uvicorn.Server(config)
+        server_thread = threading.Thread(daemon=False, target=server.run)
+        server_thread.start()
 
 
 # add a function to stop the server
 # don't stop the server via a request
 def stop_server():
-    global server_started
-    if server_started:
-        import uvicorn
-        print('in stop_server() before uvicorn stop')
-        uvicorn.stop()
-        server_started = False
+    global server, server_thread
+    print(f'{server=}')
+    if server is not None:
+        server.should_exit = True
+        server_thread.join()
+        server = None
+        server_thread = None

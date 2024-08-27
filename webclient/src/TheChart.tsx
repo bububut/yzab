@@ -37,7 +37,7 @@ const TheChart: React.FC<TheChartProps> = ({ plotData }) => {
         },
         timeScale: {
           timeVisible: true,
-          secondsVisible: false,
+          secondsVisible: true,
         },
         localization: {
           dateFormat: 'yyyy-MM-dd',
@@ -160,7 +160,8 @@ const TheChart: React.FC<TheChartProps> = ({ plotData }) => {
 
       });
 
-
+      // console.log(chartRef.current.timeScale().getVisibleLogicalRange());
+      chartRef.current.timeScale().setVisibleLogicalRange({from: 0, to: 500});
     }
 
     return () => {

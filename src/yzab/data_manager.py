@@ -1,7 +1,7 @@
 from __future__ import annotations
 import pandas as pd
 import numpy as np
-import uuid
+# import uuid
 import copy
 
 class DataManager:
@@ -9,9 +9,11 @@ class DataManager:
         self.data_store = {}
 
     def save_data(self, df: pd.DataFrame, plot_config: list, name: str = None) -> str:
-        data_id = str(uuid.uuid4())
+        # data_id = str(uuid.uuid4())
         if name is None:
             name = f'Data #{len(self.data_store)}'
+        data_id = name
+            
         
         df = df.copy()
         plot_config = copy.deepcopy(plot_config)
@@ -37,8 +39,16 @@ class DataManager:
             if 'yaxis' not in cfg:
                 cfg['yaxis'] = 'right'
             
-            if 'color' not in cfg:
-                cfg['color'] = '#2196f3'
+            colorname = cfg.get('color', 'cyan')
+            colormap = {
+                'blue': '#1f77b4', 'orange': '#ff7f0e', 'green': '#2ca02c', 'red': '#d62728', 'purple': '#9467bd',
+                'brown': '#8c564b', 'pink': '#e377c2', 'gray': '#7f7f7f', 'olive': '#bcbd22', 'cyan': '#17becf',
+                'black': '#000000', 'white': '#ffffff'
+                }
+            if colorname.startswith('#'):
+                pass
+            else:
+                cfg['color'] = colormap.get(colorname, '#1f77b4')
 
         
         df['time'] = (df.index.astype(np.int64) // 1e9).astype(np.int32)
@@ -70,9 +80,4 @@ class DataManager:
         if data_id in self.data_store:
             del self.data_store[data_id]
     
-    def delete_data_by_name(self, name: str) -> None:
-        for data_id, data in self.data_store.items():
-            if data['name'] == name:
-                del self.data_store[data_id]
-
 data_manager = DataManager()
