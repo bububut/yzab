@@ -39,6 +39,10 @@ class DataManager:
             if 'yaxis' not in cfg:
                 cfg['yaxis'] = 'right'
             
+            # 添加默认的 pane id
+            if 'pane' not in cfg:
+                cfg['pane'] = 0
+            
             colorname = cfg.get('color', 'cyan')
             colormap = {
                 'blue': '#1f77b4', 'orange': '#ff7f0e', 'green': '#2ca02c', 'red': '#d62728', 'purple': '#9467bd',

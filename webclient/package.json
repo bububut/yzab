@@ -1,6 +1,6 @@
 {
   "name": "webclient",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "homepage": ".",
   "dependencies": {
@@ -12,7 +12,7 @@
     "@types/react": "^18.2.7",
     "@types/react-dom": "^18.2.4",
     "antd": "^5.6.1",
-    "lightweight-charts": "^4.0.1",
+    "lightweight-charts": "~4.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",

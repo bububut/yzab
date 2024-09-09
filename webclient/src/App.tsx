@@ -45,12 +45,12 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <Row style={{ height: '100%' }}>
-        <Col span={20}>
+        <Col span={20} style={{ height: '100%'}}>
           <div className="chart-container">
             <TheChart plotData={chartData} />
           </div>
         </Col>
-        <Col span={4}>
+        <Col span={4} style={{ height: '100%'}}>
           <div className="list-container">
             <List
               dataSource={dataList}
